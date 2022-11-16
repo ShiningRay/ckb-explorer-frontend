@@ -68,7 +68,8 @@ export const HashCardPanel = styled.div`
   .hash__copy_icon {
     cursor: pointer;
     margin-left: 20px;
-    transform: translateY(6px);
+    display: flex;
+    align-items: center;
     @media (max-width: 750px) {
       margin-left: 10px;
       transform: translateY(3px);
@@ -76,7 +77,6 @@ export const HashCardPanel = styled.div`
     > img {
       width: 21px;
       height: 24px;
-      margin-bottom: 6px;
 
       @media (max-width: 750px) {
         width: 16px;

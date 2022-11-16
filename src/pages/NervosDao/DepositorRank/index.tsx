@@ -1,4 +1,5 @@
 import { Tooltip } from 'antd'
+import { addressToScript, scriptToAddress } from '@nervosnetwork/ckb-sdk-utils'
 import { useAppState } from '../../../contexts/providers'
 import { localeNumberString } from '../../../utils/number'
 import { shannonToCkb } from '../../../utils/util'
@@ -17,8 +18,16 @@ import {
 } from './styled'
 import ItemCard from '../../../components/Card/ItemCard'
 
+const tryReformAddr = (address: string) => {
+  try {
+    return scriptToAddress(addressToScript(address), address.startsWith('ckb'))
+  } catch {
+    return address
+  }
+}
+
 const AddressText = ({ address }: { address: string }) => {
-  const addressText = adaptPCEllipsis(address, 10, 40)
+  const addressText = adaptPCEllipsis(tryReformAddr(address), 10, 40)
   if (addressText.includes('...')) {
     return (
       <Tooltip placement="top" title={<CopyTooltipText content={address} />}>

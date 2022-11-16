@@ -8,6 +8,8 @@ import 'echarts/lib/component/tooltip'
 import 'echarts/lib/component/title'
 import 'echarts/lib/component/legend'
 import 'echarts/lib/component/markLine'
+import 'echarts/lib/component/dataZoom'
+import 'echarts/lib/component/brush'
 import ReactEchartsCore from 'echarts-for-react/lib/core'
 import echarts from 'echarts/lib/echarts'
 import { Tooltip } from 'antd'
@@ -126,6 +128,8 @@ const tooltipColor = (color: string) =>
 
 const tooltipWidth = (value: string, width: number) =>
   `<span style="width:${width}px;display:inline-block;">${value}:</span>`
+
+export type SeriesItem = { seriesName: string; name: string; color: string; dataIndex: number }
 
 // eslint-disable-next-line object-curly-newline
 export { ChartLoading, ReactChartCore, ChartPage, tooltipColor, tooltipWidth }

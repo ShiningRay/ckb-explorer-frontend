@@ -3,10 +3,9 @@ import { useLocation } from 'react-router-dom'
 import Content from '../../components/Content'
 import Search from '../../components/Search'
 import i18n from '../../utils/i18n'
-import { SearchFailType } from '../../constants/common'
+import { SearchFailType, MAINNET_URL, TESTNET_URL } from '../../constants/common'
 import { isMainnet } from '../../utils/chain'
 import { SearchContent, SearchPanel } from './styled'
-import CONFIG from '../../config'
 
 const chainErrorMessage = () =>
   isMainnet() ? i18n.t('search.address_type_testnet_error') : i18n.t('search.address_type_mainnet_error')
@@ -14,12 +13,7 @@ const chainErrorMessage = () =>
 const chainUrlMessage = () =>
   isMainnet() ? i18n.t('search.address_type_testnet_url') : i18n.t('search.address_type_mainnet_url')
 
-export const chainUrl = () => {
-  const mainnetUrl = `${CONFIG.MAINNET_URL}`
-  const testnetUrl = `${CONFIG.MAINNET_URL}/${CONFIG.TESTNET_NAME}`
-
-  return isMainnet() ? testnetUrl : mainnetUrl
-}
+const targetUrl = isMainnet() ? TESTNET_URL : MAINNET_URL
 
 export default ({ address }: { address?: string }) => {
   const { search } = useLocation()
@@ -37,7 +31,7 @@ export default ({ address }: { address?: string }) => {
           {(type && type === SearchFailType.CHAIN_ERROR) || address ? (
             <div>
               <span>{chainErrorMessage()}</span>
-              <a href={`${chainUrl()}/address/${q}`} rel="noopener noreferrer">
+              <a href={`${targetUrl}address/${q}`} rel="noopener noreferrer">
                 {chainUrlMessage()}
               </a>
             </div>

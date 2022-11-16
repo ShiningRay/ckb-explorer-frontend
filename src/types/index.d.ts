@@ -33,6 +33,9 @@ declare namespace State {
     | 'm_nft_issuer'
     | 'm_nft_class'
     | 'm_nft_token'
+    | 'nrc_721_token'
+    | 'cota_registry'
+    | 'cota_regular'
 
   interface UDTInfo {
     symbol: string
@@ -40,6 +43,7 @@ declare namespace State {
     decimal: string
     typeHash: string
     published: boolean
+    uan?: string
   }
 
   interface NftIssuer {
@@ -84,6 +88,7 @@ declare namespace State {
     udtInfo: UDTInfo
     cellInfo: CellInfo
     mNftInfo: NftIssuer | NftClass | NftToken
+    nrc721TokenInfo: Record<'amount' | 'symbol', string>
   }
 
   export interface CellInfo {
@@ -105,7 +110,10 @@ declare namespace State {
     amount: string
     typeHash: string
     udtIconFile: string
+    uan?: string
     udtType: 'sudt'
+    collection: undefined
+    cota: undefined
   }
 
   interface MNFT {
@@ -115,6 +123,11 @@ declare namespace State {
     typeHash: string
     udtIconFile: string
     udtType: 'm_nft_token'
+    uan: undefined
+    collection: {
+      typeHash: string
+    }
+    cota: undefined
   }
 
   interface NRC721 {
@@ -123,9 +136,28 @@ declare namespace State {
     typeHash: string
     udtIconFile: string // base uri with token id in fact
     udtType: 'nrc_721_token'
+    uan: undefined
+    collection: {
+      typeHash: string
+    }
+    cota: undefined
   }
 
-  export type UDTAccount = SUDT | MNFT | NRC721
+  interface CoTA {
+    symbol: string
+    amount: string
+    typeHash: string
+    udtIconFile: string // base uri with token id in fact
+    udtType: 'cota'
+    uan: undefined
+    collection: undefined
+    cota: {
+      cotaId: number
+      tokenId: number
+    }
+  }
+
+  export type UDTAccount = SUDT | MNFT | NRC721 | CoTA
 
   export interface Address {
     addressHash: string
@@ -200,6 +232,7 @@ declare namespace State {
     liveCellChanges: string
     capacityInvolved: string
     txStatus: string
+    detailedMessage: string
   }
 
   export interface BlockchainInfo {
@@ -262,6 +295,7 @@ declare namespace State {
     estimatedEpochTime: string
     transactionsLast24Hrs: string
     transactionsCountPerMinute: string
+    reorgStartedAt: string | null
   }
 
   export interface StatisticTransactionCount {
@@ -298,6 +332,7 @@ declare namespace State {
 
   export interface StatisticDifficultyHashRate {
     difficulty: string
+    uncleRate: string
     hashRate: string
     epochNumber: string
   }
@@ -325,8 +360,6 @@ declare namespace State {
   }
 
   export interface StatisticDifficultyUncleRateEpoch {
-    difficulty: string
-    uncleRate: string
     epochNumber: string
     epochTime: string
     epochLength: string
@@ -490,6 +523,8 @@ declare namespace State {
     typeHash: string
     issuerAddress: string
     typeScript: Script
+    displayName?: string
+    uan?: string
   }
 
   export interface UDTState {
@@ -633,6 +668,17 @@ declare namespace State {
     appWidth: number
     appHeight: number
     language: 'en' | 'zh'
+    primaryColor: string
+    secondaryColor: string
+    chartColor: {
+      areaColor: string
+      colors: string[]
+      moreColors: string[]
+      totalSupplyColors: string[]
+      daoColors: string[]
+      secondaryIssuanceColors: string[]
+      liquidityColors: string[]
+    }
   }
 
   export interface AppPayload extends App, ToastMessage {

@@ -25,7 +25,6 @@ import {
   dispatchDifficultyHashRate,
   dispatchDifficultyUncleRateEpoch,
 } from './action'
-import { isMobile } from '../../../utils/screen'
 
 export const getStatisticDifficultyHashRate = (dispatch: AppDispatch) => {
   const data = fetchEpochChartCache(ChartCachedKeys.DifficultyHashRate)
@@ -40,6 +39,7 @@ export const getStatisticDifficultyHashRate = (dispatch: AppDispatch) => {
       const difficultyHashRates = data.map(wrapper => ({
         epochNumber: wrapper.attributes.epochNumber,
         difficulty: wrapper.attributes.difficulty,
+        uncleRate: new BigNumber(wrapper.attributes.uncleRate).toFixed(4),
         hashRate: new BigNumber(wrapper.attributes.hashRate).multipliedBy(1000).toNumber(),
       }))
       dispatchDifficultyHashRate(dispatch, difficultyHashRates)
@@ -57,31 +57,25 @@ export const getStatisticDifficultyHashRate = (dispatch: AppDispatch) => {
     })
 }
 
-const sliceStatistics = (data: Array<State.StatisticDifficultyUncleRateEpoch>) =>
-  data.slice(isMobile() ? Math.ceil(data.length / 2) : 0)
-
 export const getStatisticDifficultyUncleRateEpoch = (dispatch: AppDispatch) => {
   const data = fetchEpochChartCache(
     ChartCachedKeys.DifficultyUncleRateEpoch,
   ) as State.StatisticDifficultyUncleRateEpoch[]
 
   if (data) {
-    dispatchDifficultyUncleRateEpoch(dispatch, sliceStatistics(data))
+    dispatchDifficultyUncleRateEpoch(dispatch, data)
     return
   }
   fetchStatisticDifficultyUncleRateEpoch()
     .then((response: Response.Response<Response.Wrapper<State.StatisticDifficultyUncleRateEpoch>[]> | null) => {
       if (!response) return
       const { data } = response
-      const difficultyUncleRateEpochs = data.slice(Math.ceil(data.length / 2)).map(wrapper => ({
+      const difficultyUncleRateEpochs = data.map(wrapper => ({
         epochNumber: wrapper.attributes.epochNumber,
-        difficulty: wrapper.attributes.difficulty,
-        uncleRate: new BigNumber(wrapper.attributes.uncleRate).toFixed(4),
         epochTime: wrapper.attributes.epochTime,
         epochLength: wrapper.attributes.epochLength,
       }))
-      const dispatchData = sliceStatistics(difficultyUncleRateEpochs)
-      dispatchDifficultyUncleRateEpoch(dispatch, dispatchData)
+      dispatchDifficultyUncleRateEpoch(dispatch, difficultyUncleRateEpochs)
       if (difficultyUncleRateEpochs && difficultyUncleRateEpochs.length > 0) {
         storeEpochChartCache(ChartCachedKeys.DifficultyUncleRateEpoch, difficultyUncleRateEpochs)
       }

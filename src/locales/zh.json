@@ -11,14 +11,22 @@
       "ckb_unit": "CKB",
       "note": "注: ",
       "ckb_explorer": "CKB 浏览器",
-      "none": "无"
+      "none": "无",
+      "days": "天",
+      "hours": "小时",
+      "minutes": "分钟",
+      "seconds": "秒",
+      "minaraTime": "美国东部时间: 2022 年 05 月 10 日",
+      "miranaAlive": "MIRANA 已经激活"
     },
     "toast": {
       "invalid_network": "网络出错，请稍后再试",
+      "too_many_request": "请求次数过多, 请稍后再试",
       "data_too_large": "数据过大，不支持下载",
       "result_not_found": "没有找到搜索结果",
       "maintenance": "请注意 CKB 浏览器将于 {{start}} 至 {{end}} 处于维护状态，期间数据更新可能会有延迟。",
-      "dismiss": "知道了"
+      "dismiss": "知道了",
+      "handling-reorg": " 检测到 {{time}} 发生 Reorg, CKB 浏览器正在彻底检查数据。所需时间约为半小时, 请稍后访问"
     },
     "navbar": {
       "wallet": "钱包",
@@ -48,7 +56,8 @@
       "wallet_neuron_description": "An open source project from Nervos Foundation, with local CKB node to achieve trustless services",
       "wallet_renrenbit": "Renrenbit",
       "wallet_renrenbit_description": "A digital asset management platform offering 100% reserve",
-      "wallets_memo": "In alphabetical order"
+      "wallets_memo": "In alphabetical order",
+      "nft_collections": "NFT 藏品"
     },
     "blockchain": {
       "latest_block": "最高块",
@@ -171,6 +180,7 @@
       "faucet": "水龙头",
       "community": "社区",
       "twitter": "Twitter",
+      "discord": "Discord",
       "blog": "Blog",
       "telegram": "Telegram",
       "reddit": "Reddit",
@@ -214,7 +224,11 @@
       "confirmation": "确认区块",
       "confirmations": "确认区块",
       "unable_decode_address": "地址解析失败",
-      "pending_reward_tooltip": "区块奖励与交易费将在 11 个区块后发送给矿工，阅读共识协议了解更多信息"
+      "pending_reward_tooltip": "区块奖励与交易费将在 11 个区块后发送给矿工，阅读共识协议了解更多信息",
+      "view-new-address": "查看新地址",
+      "visit-deprecated-address": "查看废弃地址格式",
+      "view-deprecated-address": "展示旧地址格式",
+      "displaying-deprecated-address": "正在以旧格式地址展示"
     },
     "transaction": {
       "transaction": "交易",
@@ -259,6 +273,9 @@
       "m_nft_issuer": "m-NFT Issuer",
       "m_nft_class": "m-NFT Class",
       "m_nft_token": "m-NFT",
+      "nrc_721_token": "NRC 721",
+      "cota_registry": "CoTA Registry",
+      "cota": "CoTA",
       "unknown_nft": "匿名",
       "nft_limited": "限量",
       "nft_unlimited": "不限量",
@@ -267,7 +284,10 @@
       "script_code_hash": "code_hash",
       "script_hash_type": "hash_type",
       "script_data": "data",
-      "tx_rejected_reason": "至少一个交易输入无效"
+      "export-transaction": "导出交易",
+      "capacity_usage": "Capacity 使用情况",
+      "declared_capacity": "declared",
+      "occupied_capacity": "occupied"
     },
     "block": {
       "block": "区块",
@@ -297,7 +317,9 @@
       "witnesses_root": "Witnesses Root",
       "pending": "待发放",
       "pending_tip": "区块奖励将在 11 个区块后发送给矿工，阅读共识协议了解更多信息",
-      "reward_sent_tip": "区块奖励已经发送成功，请点击查看详情"
+      "reward_sent_tip": "区块奖励已经发送成功，请点击查看详情",
+      "view_prev_block": "查看上一区块",
+      "view_next_block": "查看下一区块"
     },
     "nervos_dao": {
       "nervos_dao": "Nervos DAO",
@@ -353,6 +375,7 @@
     "udt": {
       "sudt": "sUDT",
       "name": "代币名称",
+      "uan": "UAN",
       "symbol": "代币符号",
       "issuer": "发行人",
       "type_script": "Type Script",
@@ -364,12 +387,57 @@
       "submit_token_info": "提交代币信息",
       "unknown_token_description": "此代币信息暂时不完整，如果你是此代币的拥有者，请提交代币信息",
       "tokens": "代币",
-      "name_symbol": "代币名称 (符号)",
+      "uan_name": "UAN & 名称",
       "transactions": "24小时交易数",
       "address_count": "持币用户数",
       "created_time": "创建时间",
       "tokens_empty": "目前没有代币。",
-      "unverified": "未验证"
+      "unverified": "未验证",
+      "view-deprecated-address": "查看旧地址"
+    },
+    "nft": {
+      "nft_collection": "NFT 藏品",
+      "collection_name": "藏品名称",
+      "standard": "类型",
+      "holder_and_mint_count": "持有人/发行数",
+      "minter_address": "发行人",
+      "no_record": "没有记录",
+      "mnft": "M-NFT",
+      "m_nft": "m-NFT",
+      "nrc721": "NRC 721",
+      "nrc_721": "NRC 721",
+      "cota": "CoTA",
+      "loading": "加载中...",
+      "nft": "NFT",
+      "tx_hash": "交易",
+      "age": "时间",
+      "from": "发送方",
+      "to": "接收方",
+      "transfer-list": "转让记录",
+      "holder-list": "持有人列表",
+      "holder": "持有人",
+      "quantity": "数量",
+      "inventory": "目录",
+      "action": "操作",
+      "action_type": {
+        "mint": "铸造",
+        "normal": "转让",
+        "destruction": "销毁"
+      },
+      "owner": "持有人",
+      "activity": "活动",
+      "toggle-age": "切换时间格式"
+    },
+    "script_list": {
+      "title": "脚本",
+      "links": "相关链接",
+      "on_chain_data": "链上数据",
+      "link": {
+        "rfc": "RFC",
+        "code": "源代码",
+        "deprecated": "已废弃",
+        "website": "官网"
+      }
     }
   }
 }

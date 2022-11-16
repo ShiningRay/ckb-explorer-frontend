@@ -28,11 +28,14 @@ import UDTTokenIcon from '../../../assets/udt_token.png'
 import NFTIssuerIcon from '../../../assets/m_nft_issuer.svg'
 import NFTClassIcon from '../../../assets/m_nft_class.svg'
 import NFTTokenIcon from '../../../assets/m_nft.svg'
+import CoTACellIcon from '../../../assets/cota_cell.svg'
+import CoTARegCellIcon from '../../../assets/cota_reg_cell.svg'
 import TransactionCellScript from '../TransactionCellScript'
 import SimpleModal from '../../../components/Modal'
 import SimpleButton from '../../../components/SimpleButton'
 import TransactionReward from '../TransactionReward'
 import Cellbase from '../../../components/Transaction/Cellbase'
+import { useDeprecatedAddr, useNewAddr } from '../../../utils/hook'
 
 const AddressText = ({ address }: { address: string }) => {
   const addressText = isMobile() ? adaptMobileEllipsis(address, 5) : adaptPCEllipsis(address, 4, 80)
@@ -53,36 +56,47 @@ const TransactionCellIndexAddress = ({
   cell,
   cellType,
   index,
+  isAddrNew,
 }: {
   cell: State.Cell
   cellType: CellType
   index: number
-}) => (
-  <TransactionCellAddressPanel>
-    <div className="transaction__cell_index">
-      <div>{`#${index}`}</div>
-    </div>
-    <TransactionCellHashPanel highLight={cell.addressHash !== null}>
-      {!cell.fromCellbase && cellType === CellType.Input && (
-        <span>
-          <TransactionCellArrow cell={cell} cellType={cellType} />
-        </span>
-      )}
-      {cell.addressHash ? (
-        <AddressText address={cell.addressHash} />
-      ) : (
-        <span className="transaction__cell_address_no_link">
-          {cell.fromCellbase ? 'Cellbase' : i18n.t('address.unable_decode_address')}
-        </span>
-      )}
-      {cellType === CellType.Output && <TransactionCellArrow cell={cell} cellType={cellType} />}
-    </TransactionCellHashPanel>
-  </TransactionCellAddressPanel>
-)
+  isAddrNew: boolean
+}) => {
+  const deprecatedAddr = useDeprecatedAddr(cell.addressHash)!
+  const newAddr = useNewAddr(cell.addressHash)
+  return (
+    <TransactionCellAddressPanel>
+      <div className="transaction__cell_index">
+        <div>{`#${index}`}</div>
+      </div>
+      <TransactionCellHashPanel highLight={cell.addressHash !== null}>
+        {!cell.fromCellbase && cellType === CellType.Input && (
+          <span>
+            <TransactionCellArrow cell={cell} cellType={cellType} />
+          </span>
+        )}
+        {cell.addressHash ? (
+          <AddressText address={!isAddrNew ? deprecatedAddr : newAddr} />
+        ) : (
+          <span className="transaction__cell_address_no_link">
+            {cell.fromCellbase ? 'Cellbase' : i18n.t('address.unable_decode_address')}
+          </span>
+        )}
+        {cellType === CellType.Output && <TransactionCellArrow cell={cell} cellType={cellType} />}
+      </TransactionCellHashPanel>
+    </TransactionCellAddressPanel>
+  )
+}
 
 const isUdt = (cell: State.Cell) => cell.udtInfo && cell.udtInfo.typeHash
 
 const parseNftInfo = (cell: State.Cell) => {
+  if (cell.cellType === 'nrc_721_token') {
+    const nftInfo = cell.nrc721TokenInfo
+    return <TransactionCellNftInfo>{`${nftInfo.symbol} #${nftInfo.amount}`}</TransactionCellNftInfo>
+  }
+
   if (cell.cellType === 'm_nft_issuer') {
     const nftInfo = cell.mNftInfo as State.NftIssuer
     if (nftInfo.issuerName) {
@@ -90,6 +104,7 @@ const parseNftInfo = (cell: State.Cell) => {
     }
     return i18n.t('transaction.unknown_nft')
   }
+
   if (cell.cellType === 'm_nft_class') {
     const nftInfo = cell.mNftInfo as State.NftClass
     const className = nftInfo.className ? sliceNftName(nftInfo.className) : i18n.t('transaction.unknown_nft')
@@ -138,6 +153,23 @@ const TransactionCellDetail = ({ cell }: { cell: State.Cell }) => {
       detailIcon = NFTTokenIcon
       tooltip = parseNftInfo(cell)
       break
+    case 'nrc_721_token':
+      detailTitle = i18n.t('transaction.nrc_721_token')
+      detailIcon = NFTTokenIcon
+      tooltip = parseNftInfo(cell)
+      break
+    case 'cota_registry': {
+      detailTitle = i18n.t('transaction.cota_registry')
+      detailIcon = CoTARegCellIcon
+      tooltip = detailTitle
+      break
+    }
+    case 'cota_regular': {
+      detailTitle = i18n.t('transaction.cota')
+      detailIcon = CoTACellIcon
+      tooltip = detailTitle
+      break
+    }
     default:
       break
   }
@@ -192,7 +224,7 @@ const TransactionCellCapacityAmount = ({ cell }: { cell: State.Cell }) => {
   return udtInfo && udtInfo.typeHash ? (
     <span>
       {udtInfo.published
-        ? `${parseUDTAmount(udtInfo.amount, udtInfo.decimal)} ${udtInfo.symbol}`
+        ? `${parseUDTAmount(udtInfo.amount, udtInfo.decimal)} ${udtInfo.uan || udtInfo.symbol}`
         : `${i18n.t('udt.unknown_token')} #${udtInfo.typeHash.substring(udtInfo.typeHash.length - 4)}`}
     </span>
   ) : (
@@ -214,6 +246,7 @@ export default ({
   txHash,
   showReward,
   txStatus,
+  isAddrNew,
 }: {
   cell: State.Cell
   cellType: CellType
@@ -221,6 +254,7 @@ export default ({
   txHash?: string
   showReward?: boolean
   txStatus: string
+  isAddrNew: boolean
 }) => {
   if (isMobile()) {
     return (
@@ -231,7 +265,7 @@ export default ({
             cell.fromCellbase && cellType === CellType.Input ? (
               <Cellbase cell={cell} cellType={cellType} isDetail />
             ) : (
-              <TransactionCellIndexAddress cell={cell} cellType={cellType} index={index} />
+              <TransactionCellIndexAddress cell={cell} cellType={cellType} index={index} isAddrNew={isAddrNew} />
             )
           }
         />
@@ -264,7 +298,7 @@ export default ({
           {cell.fromCellbase && cellType === CellType.Input ? (
             <Cellbase cell={cell} cellType={cellType} isDetail />
           ) : (
-            <TransactionCellIndexAddress cell={cell} cellType={cellType} index={index} />
+            <TransactionCellIndexAddress cell={cell} cellType={cellType} index={index} isAddrNew={isAddrNew} />
           )}
         </div>
 

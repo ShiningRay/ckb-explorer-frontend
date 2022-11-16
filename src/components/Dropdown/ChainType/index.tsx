@@ -1,10 +1,7 @@
-import i18n from '../../../utils/i18n'
-import CONFIG from '../../../config'
 import { isMainnet } from '../../../utils/chain'
 import { ChainTypePanel } from './styled'
 import SimpleButton from '../../SimpleButton'
-
-const testnetUrl = `${CONFIG.MAINNET_URL}/${CONFIG.TESTNET_NAME}`
+import { ChainName, MAINNET_URL, TESTNET_URL } from '../../../constants/common'
 
 export default ({ setShow, left, top }: { setShow: Function; left: number; top: number }) => {
   const hideDropdown = () => {
@@ -14,11 +11,11 @@ export default ({ setShow, left, top }: { setShow: Function; left: number; top: 
   return (
     <ChainTypePanel left={left} top={top} onMouseLeave={hideDropdown}>
       <SimpleButton className={`chain__type__${isMainnet() ? 'selected' : 'normal'}`} onClick={hideDropdown}>
-        <a href={CONFIG.MAINNET_URL}>{i18n.t('blockchain.mainnet')}</a>
+        <a href={MAINNET_URL}>{`${ChainName.Mainnet} mainnet`}</a>
       </SimpleButton>
       <div className="chain__type__separate" />
       <SimpleButton className={`chain__type__${!isMainnet() ? 'selected' : 'normal'}`} onClick={hideDropdown}>
-        <a href={testnetUrl}>{`${CONFIG.TESTNET_NAME} ${i18n.t('blockchain.testnet')}`}</a>
+        <a href={TESTNET_URL}>{`${ChainName.Testnet} testnet`}</a>
       </SimpleButton>
     </ChainTypePanel>
   )

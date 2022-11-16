@@ -1,11 +1,11 @@
 import { ReactNode } from 'react'
 import camelcaseKeys from 'camelcase-keys'
 import BigNumber from 'bignumber.js'
+import { scriptToAddress, addressToScript } from '@nervosnetwork/ckb-sdk-utils'
 import { MAX_CONFIRMATION, TOKEN_EMAIL_SUBJECT, TOKEN_EMAIL_BODY, TOKEN_EMAIL_ADDRESS } from '../constants/common'
 import { ContractHashTag, MainnetContractHashTags, TestnetContractHashTags } from '../constants/scripts'
 import i18n from './i18n'
 import { isMainnet } from './chain'
-import CONFIG from '../config'
 
 export const copyElementValue = (component: any) => {
   if (!component) return
@@ -90,13 +90,6 @@ export const isValidReactNode = (node: ReactNode) => {
   return !!node
 }
 
-export const baseUrl = () => {
-  const mainnetUrl = `${CONFIG.MAINNET_URL}`
-  const testnetUrl = `${CONFIG.MAINNET_URL}/${CONFIG.TESTNET_NAME}`
-
-  return isMainnet() ? mainnetUrl : testnetUrl
-}
-
 export const matchScript = (contractHash: string, hashType: string): ContractHashTag | undefined => {
   if (isMainnet()) {
     return MainnetContractHashTags.find(
@@ -118,10 +111,65 @@ export const matchTxHash = (txHash: string, index: number | string): ContractHas
 export const udtSubmitEmail = () =>
   `mailto:${TOKEN_EMAIL_ADDRESS}?subject=${TOKEN_EMAIL_SUBJECT}&body=${TOKEN_EMAIL_BODY}`
 
+export const deprecatedAddrToNewAddr = (addr: string) => {
+  if (!addr.startsWith('ck')) {
+    return addr
+  }
+  try {
+    return scriptToAddress(addressToScript(addr), addr.startsWith('ckb'))
+  } catch {
+    return addr
+  }
+}
+
+export const handleRedirectFromAggron = () => {
+  const PREV_TESTNAME = 'aggron'
+  const CURRENT_TESTNET = 'pudge'
+  const testnetNameRegexp = new RegExp(`^/(${PREV_TESTNAME}|${CURRENT_TESTNET})`)
+  if (testnetNameRegexp.test(window.location.pathname)) {
+    const redirect = `${window.location.protocol}//${CURRENT_TESTNET}.${
+      window.location.host
+    }${window.location.pathname.replace(testnetNameRegexp, '')}`
+    window.location.href = redirect
+    return true
+  }
+  return false
+}
+
+export const handleNftImgError = (e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+  e.currentTarget.src = '/images/nft_placeholder.png'
+}
+
+export const patchMibaoImg = (url: string) => {
+  const JINSE_ORIGIN = 'https://oss.jinse.cc'
+  const NERVINA_ORIGIN = 'https://goldenlegend.oss-accelerate.aliyuncs.com'
+  const MAD_ORIGIN = 'https://mad-api.nervina.cn'
+
+  const NEW_MIBAO_ORIGIN = 'https://nft-box.s3.amazonaws.com'
+  const NEW_MAD_ORIGIN = 'https://mad.digitalcompound.org'
+
+  try {
+    const u = new URL(url)
+    if ([JINSE_ORIGIN, NERVINA_ORIGIN].includes(u.origin)) {
+      return `${NEW_MIBAO_ORIGIN}${u.pathname}`
+    }
+
+    if ([MAD_ORIGIN].includes(u.origin)) {
+      return `${NEW_MAD_ORIGIN}${u.pathname}`
+    }
+
+    return url
+  } catch {
+    return url
+  }
+}
+
 export default {
   copyElementValue,
   shannonToCkb,
   toCamelcase,
   formatConfirmation,
   isValidReactNode,
+  deprecatedAddrToNewAddr,
+  handleRedirectFromAggron,
 }

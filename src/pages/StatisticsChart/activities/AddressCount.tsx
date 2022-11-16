@@ -1,13 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import BigNumber from 'bignumber.js'
 import { getStatisticAddressCount } from '../../../service/app/charts/activities'
 import i18n, { currentLanguage } from '../../../utils/i18n'
-import { handleAxis } from '../../../utils/chart'
+import { DATA_ZOOM_CONFIG, handleAxis } from '../../../utils/chart'
 import { parseDateNoTime } from '../../../utils/date'
 import { isMobile } from '../../../utils/screen'
 import { useAppState, useDispatch } from '../../../contexts/providers'
 import { ChartLoading, ReactChartCore, ChartPage, tooltipColor, tooltipWidth } from '../common'
-import { ChartColors } from '../../../constants/common'
 
 const gridThumbnail = {
   left: '4%',
@@ -26,25 +25,26 @@ const grid = {
 
 const getOption = (
   statisticAddressCounts: State.StatisticAddressCount[],
+  chartColor: State.App['chartColor'],
   isThumbnail = false,
 ): echarts.EChartOption => ({
-  color: ChartColors,
+  color: chartColor.colors,
   tooltip: !isThumbnail
     ? {
         trigger: 'axis',
         formatter: (dataList: any) => {
           const widthSpan = (value: string) => tooltipWidth(value, currentLanguage() === 'en' ? 155 : 110)
-          let result = `<div>${tooltipColor('#333333')}${widthSpan(i18n.t('statistic.date'))} ${parseDateNoTime(
-            dataList[0].name,
-          )}</div>`
-          result += `<div>${tooltipColor(ChartColors[0])}${widthSpan(i18n.t('statistic.address_count'))} ${handleAxis(
-            dataList[0].data,
-          )}</div>`
+          let result = `<div>${tooltipColor('#333333')}${widthSpan(i18n.t('statistic.date'))} ${
+            dataList[0].data[0]
+          }</div>`
+          result += `<div>${tooltipColor(chartColor.colors[0])}\
+          ${widthSpan(i18n.t('statistic.address_count'))} ${handleAxis(dataList[0].data[1])}</div>`
           return result
         },
       }
     : undefined,
   grid: isThumbnail ? gridThumbnail : grid,
+  dataZoom: isThumbnail ? [] : DATA_ZOOM_CONFIG,
   xAxis: [
     {
       name: isMobile() || isThumbnail ? '' : i18n.t('statistic.date'),
@@ -52,9 +52,8 @@ const getOption = (
       nameGap: 30,
       type: 'category',
       boundaryGap: false,
-      data: statisticAddressCounts.map(data => data.createdAtUnixtimestamp),
-      axisLabel: {
-        formatter: (value: string) => parseDateNoTime(value),
+      splitLine: {
+        show: false,
       },
     },
   ],
@@ -69,7 +68,7 @@ const getOption = (
       },
       axisLine: {
         lineStyle: {
-          color: ChartColors[0],
+          color: chartColor.colors[0],
         },
       },
       axisLabel: {
@@ -84,17 +83,26 @@ const getOption = (
       yAxisIndex: 0,
       symbol: isThumbnail ? 'none' : 'circle',
       symbolSize: 3,
-      data: statisticAddressCounts.map(data => new BigNumber(data.addressesCount).toNumber()),
     },
   ],
+  dataset: {
+    source: statisticAddressCounts.map(data => [
+      parseDateNoTime(data.createdAtUnixtimestamp),
+      new BigNumber(data.addressesCount).toNumber(),
+    ]),
+  },
 })
 
 export const AddressCountChart = ({ isThumbnail = false }: { isThumbnail?: boolean }) => {
-  const { statisticAddressCounts, statisticAddressCountsFetchEnd } = useAppState()
+  const { statisticAddressCounts, statisticAddressCountsFetchEnd, app } = useAppState()
+  const option = useMemo(
+    () => getOption(statisticAddressCounts, app.chartColor, isThumbnail),
+    [statisticAddressCounts, app.chartColor, isThumbnail],
+  )
   if (!statisticAddressCountsFetchEnd || statisticAddressCounts.length === 0) {
     return <ChartLoading show={!statisticAddressCountsFetchEnd} isThumbnail={isThumbnail} />
   }
-  return <ReactChartCore option={getOption(statisticAddressCounts, isThumbnail)} isThumbnail={isThumbnail} />
+  return <ReactChartCore option={option} isThumbnail={isThumbnail} />
 }
 
 const toCSV = (statisticAddressCounts?: State.StatisticAddressCount[]) =>

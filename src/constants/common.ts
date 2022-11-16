@@ -1,3 +1,6 @@
+import { isMainnet } from '../utils/chain'
+import config from '../config'
+
 export const BLOCK_POLLING_TIME = 4000
 export const MAX_CONFIRMATION = 1000
 export const BLOCKCHAIN_ALERT_POLLING_TIME = 10000
@@ -7,13 +10,21 @@ export const LOADING_WAITING_TIME = 500
 export const DELAY_BLOCK_NUMBER = 11
 export const PAGE_CELL_COUNT = 200
 export const MAINTENANCE_ALERT_POLLING_TIME = 3600000 // 1 hour
+export const NEXT_HARD_FORK_EPOCH = 5414
+export const EPOCH_HOURS = 4
+export const ONE_DAY_SECOND = 24 * 60 * 60
+export const ONE_HOUR_SECOND = 60 * 60
+export const ONE_MINUTE_SECOND = 60
 
-export const MAINNET_PRIMARY_THEME_COLOR = '#3cc68a'
-export const MAINNET_SECONDARY_THEME_COLOR = '#3cc68a'
-export const TESTNET_PRIMARY_THEME_COLOR = '#617bbd'
-export const TESTNET_SECONDARY_THEME_COLOR = '#85A1EA'
+export function getPrimaryColor() {
+  return isMainnet() ? '#00CC9B' : '#9A2CEC'
+}
 
-export const TOKEN_EMAIL_ADDRESS = 'asset-info-submit@nervina.io'
+export function getSecondaryColor() {
+  return isMainnet() ? '#00CC9B' : '#9A2CEC'
+}
+
+export const TOKEN_EMAIL_ADDRESS = 'ckb-explorer@nervosnet.com'
 export const TOKEN_EMAIL_SUBJECT = 'Submit Token Info'
 export const TOKEN_EMAIL_BODY = `
 Title: Submit Token Information%0a%0d
@@ -25,13 +36,16 @@ Type Script:%0a%0d
     Args:%0a%0d
 
 Information:%0a%0d
-   Full Name: 32 length max%0a%0d
-   Symbol: 8 length max / ASCII%0a%0d
+   Display Name:%0a%0d
+   UAN:%0a%0d
    Decimal: 8 (default)%0a%0d
    Description:%0a%0d
    Website:%0a%0d
    Icon File: attachment (40 x 40)%0a%0d
    Other Info:%0a%0d%0a%0d
+
+Ref:%0a%0d
+1. UAN: https://github.com/nervosnetwork/rfcs/pull/335%0a%0d
 
 ---------- Submit NRC 721 Factory Information ----------%0a%0d
 
@@ -54,6 +68,7 @@ export enum CellState {
   LOCK = 1,
   TYPE = 2,
   DATA = 3,
+  CAPACITY = 4,
 }
 
 export enum CellType {
@@ -79,5 +94,20 @@ export enum ListPageParams {
   MaxPageSize = 100,
 }
 
-export const ChartColors = ['#3182bd', '#66CC99']
-export const ChartMoreColors = ['#3182bd', '#66CC99', '#FBB04C', '#525860']
+export const ChartColor = {
+  areaColor: '#31EEB3',
+  colors: ['#5824FB', '#66CC99'],
+  moreColors: ['#5824FB', '#66CC99', '#FBB04C', '#525860'],
+  totalSupplyColors: ['#5824FB', '#31EEB3', '#484E4E'],
+  daoColors: ['#5824FB', '#31EEB3', '#484E4E'],
+  secondaryIssuanceColors: ['#484E4E', '#5824FB', '#31EEB3'],
+  liquidityColors: ['#5824FB', '#484E4E', '#31EEB3'],
+}
+
+export enum ChainName {
+  Mainnet = 'mirana',
+  Testnet = 'pudge',
+}
+
+export const MAINNET_URL = `https://${config.BASE_URL}`
+export const TESTNET_URL = `https://${ChainName.Testnet}.${config.BASE_URL}`

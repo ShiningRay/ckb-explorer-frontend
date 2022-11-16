@@ -12,37 +12,59 @@ import { ComponentActions } from '../../contexts/actions'
 import { isMobile, isScreenSmallerThan1200 } from '../../utils/screen'
 import { adaptMobileEllipsis, adaptPCEllipsis } from '../../utils/string'
 import CopyTooltipText from '../../components/Text/CopyTooltipText'
+import { ReactComponent as OpenInNew } from '../../assets/open_in_new.svg'
+import { deprecatedAddrToNewAddr } from '../../utils/util'
+import styles from './styles.module.scss'
 
 const addressContent = (address: string) => {
   if (!address) {
     return i18n.t('address.unable_decode_address')
   }
+  const newAddress = deprecatedAddrToNewAddr(address)
   const addressHash = isMobile()
-    ? adaptMobileEllipsis(address, 8)
-    : adaptPCEllipsis(address, isScreenSmallerThan1200() ? 12 : 8, 50)
+    ? adaptMobileEllipsis(newAddress, 8)
+    : adaptPCEllipsis(newAddress, isScreenSmallerThan1200() ? 12 : 8, 50)
 
   if (addressHash.includes('...')) {
     return (
-      <Tooltip placement="top" title={<CopyTooltipText content={address} />}>
-        <Link to={`/address/${address}`} className="monospace">
-          {addressHash}
-        </Link>
-      </Tooltip>
+      <>
+        <Tooltip placement="top" title={<CopyTooltipText content={newAddress} />}>
+          <Link to={`/address/${newAddress}`} className="monospace">
+            {addressHash}
+          </Link>
+        </Tooltip>
+        {newAddress !== address && (
+          <Tooltip placement="top" title={i18n.t(`udt.view-deprecated-address`)}>
+            <Link to={`/address/${address}`} className={styles.openInNew} target="_blank">
+              <OpenInNew />
+            </Link>
+          </Tooltip>
+        )}
+      </>
     )
   }
   return (
-    <Link to={`/address/${address}`} className="monospace">
-      {addressHash}
-    </Link>
+    <>
+      <Link to={`/address/${newAddress}`} className="monospace">
+        {addressHash}
+      </Link>
+      {newAddress !== address && (
+        <Tooltip placement="top" title={i18n.t(`udt.view-deprecated-address`)}>
+          <Link to={`/address/${address}`} className={styles.openInNew} target="_blank">
+            <OpenInNew />
+          </Link>
+        </Tooltip>
+      )}
+    </>
   )
 }
 
 const simpleUDTInfo = (udt: State.UDT) => {
-  const { fullName, issuerAddress, symbol, addressesCount, decimal, totalAmount } = udt
+  const { displayName, uan, fullName, issuerAddress, symbol, addressesCount, decimal, totalAmount } = udt
   return [
     {
       title: i18n.t('udt.name'),
-      content: fullName,
+      content: displayName || fullName,
     },
     {
       title: i18n.t('udt.issuer'),
@@ -53,8 +75,8 @@ const simpleUDTInfo = (udt: State.UDT) => {
       content: addressesCount,
     },
     {
-      title: i18n.t('udt.symbol'),
-      content: symbol,
+      title: i18n.t(uan ? 'udt.uan' : 'udt.symbol'),
+      content: uan || symbol,
     },
     {
       title: i18n.t('udt.decimal'),

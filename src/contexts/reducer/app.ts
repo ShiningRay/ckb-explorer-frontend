@@ -1,3 +1,4 @@
+import { ChartColor, getPrimaryColor, getSecondaryColor } from '../../constants/common'
 import { AppActions } from '../actions'
 
 export const appReducer = (
@@ -85,6 +86,16 @@ export const appReducer = (
         app: {
           ...state.app,
           language: payload.language,
+        },
+      }
+    case AppActions.UpdateHardForkStatus:
+      return {
+        ...state,
+        app: {
+          ...state.app,
+          primaryColor: getPrimaryColor(),
+          secondaryColor: getSecondaryColor(),
+          chartColor: ChartColor,
         },
       }
     default:

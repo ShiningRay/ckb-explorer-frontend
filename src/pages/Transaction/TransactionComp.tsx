@@ -24,6 +24,7 @@ import { isMainnet } from '../../utils/chain'
 import SimpleButton from '../../components/SimpleButton'
 import HashTag from '../../components/HashTag'
 import { isScreenSmallerThan1440 } from '../../utils/screen'
+import { useAddrFormatToggle } from '../../utils/hook'
 
 const showTxStatus = (txStatus: string) => txStatus.replace(/^\S/, s => s.toUpperCase())
 
@@ -88,7 +89,16 @@ export const TransactionOverview = () => {
   const [showParams, setShowParams] = useState<boolean>(false)
   const {
     transactionState: {
-      transaction: { blockNumber, cellDeps, headerDeps, witnesses, blockTimestamp, transactionFee, txStatus },
+      transaction: {
+        blockNumber,
+        cellDeps,
+        headerDeps,
+        witnesses,
+        blockTimestamp,
+        transactionFee,
+        txStatus,
+        detailedMessage,
+      },
     },
     app: { tipBlockNumber },
   } = useAppState()
@@ -134,7 +144,7 @@ export const TransactionOverview = () => {
       {
         title: i18n.t('transaction.status'),
         content: showTxStatus(txStatus),
-        valueTooltip: txStatus === 'rejected' ? i18n.t('transaction.tx_rejected_reason') : undefined,
+        valueTooltip: txStatus === 'rejected' ? detailedMessage : undefined,
       },
     )
   }
@@ -248,6 +258,7 @@ export default () => {
     },
   } = useAppState()
 
+  const { isNew: isAddrNew, setIsNew: setIsAddrNew } = useAddrFormatToggle()
   const inputs = handleCellbaseInputs(displayInputs, displayOutputs)
 
   /// [0, 11] block doesn't show block reward and only cellbase show block reward
@@ -255,12 +266,28 @@ export default () => {
     <>
       <div className="transaction__inputs">
         {inputs && (
-          <TransactionCellList inputs={inputs} showReward={blockNumber > 0 && isCellbase} txStatus={txStatus} />
+          <TransactionCellList
+            inputs={inputs}
+            showReward={blockNumber > 0 && isCellbase}
+            txStatus={txStatus}
+            addrToggle={{
+              isAddrNew,
+              setIsAddrNew,
+            }}
+          />
         )}
       </div>
       <div className="transaction__outputs">
         {displayOutputs && (
-          <TransactionCellList outputs={displayOutputs} txHash={transactionHash} txStatus={txStatus} />
+          <TransactionCellList
+            outputs={displayOutputs}
+            txHash={transactionHash}
+            txStatus={txStatus}
+            addrToggle={{
+              isAddrNew,
+              setIsAddrNew,
+            }}
+          />
         )}
       </div>
     </>

@@ -11,14 +11,22 @@
       "ckb_unit": "CKB",
       "note": "Note: ",
       "ckb_explorer": "CKB Explorer",
-      "none": "None"
+      "none": "None",
+      "days": "DAYS",
+      "hours": "HOURS",
+      "minutes": "MINS",
+      "seconds": "SECS",
+      "minaraTime": "Est May 10th 2022",
+      "miranaAlive": "MIRANA IS LIVE"
     },
     "toast": {
       "invalid_network": "Network exception, please try again later",
+      "too_many_request": "Too many requests, please try later",
       "data_too_large": "The data is too large, not available for download",
       "result_not_found": "Search result not found",
       "maintenance": "Please note that CKB Explorer will be under maintenance from {{start}} to {{end}}. Data update during the period might be delayed.",
-      "dismiss": "Dismiss"
+      "dismiss": "Dismiss",
+      "handling-reorg": "Reorg detected at {{time}} so CKB Explorer is checking data thoroughly. It may take half an hour, please visit later"
     },
     "navbar": {
       "wallet": "Wallet",
@@ -48,7 +56,8 @@
       "wallet_neuron_description": "An open source project from Nervos Foundation, with local CKB node to achieve trustless services",
       "wallet_renrenbit": "Renrenbit",
       "wallet_renrenbit_description": "A digital asset management platform offering 100% reserve",
-      "wallets_memo": "In alphabetical order"
+      "wallets_memo": "In alphabetical order",
+      "nft_collections": "NFT Collections"
     },
     "blockchain": {
       "latest_block": "Latest Block",
@@ -172,6 +181,7 @@
       "faucet": "Faucet",
       "community": "Community",
       "twitter": "Twitter",
+      "discord": "Discord",
       "blog": "Blog",
       "telegram": "Telegram",
       "reddit": "Reddit",
@@ -215,7 +225,11 @@
       "confirmation": "Confirmation",
       "confirmations": "Confirmations",
       "unable_decode_address": "Unable to decode address",
-      "pending_reward_tooltip": "The block reward and transaction fee of this block will be sent to the miner after 11 blocks，learn more from our Consensus Protocol"
+      "pending_reward_tooltip": "The block reward and transaction fee of this block will be sent to the miner after 11 blocks，learn more from our Consensus Protocol",
+      "view-new-address": "View in new address format",
+      "visit-deprecated-address": "View in deprecated address format",
+      "view-deprecated-address": "Display deprecated addresses",
+      "displaying-deprecated-address": "Displaying in deprecated address format"
     },
     "transaction": {
       "transaction": "Transaction",
@@ -261,6 +275,9 @@
       "m_nft_issuer": "m-NFT Issuer",
       "m_nft_class": "m-NFT Class",
       "m_nft_token": "m-NFT",
+      "nrc_721_token": "NRC 721",
+      "cota_registry": "CoTA Registry",
+      "cota": "CoTA",
       "unknown_nft": "anonymous",
       "nft_limited": "Limited",
       "nft_unlimited": "Unlimited",
@@ -268,7 +285,10 @@
       "script_code_hash": "code_hash",
       "script_hash_type": "hash_type",
       "script_data": "data",
-      "tx_rejected_reason": "At least one input is invalid"
+      "export-transaction": "Export Transaction",
+      "capacity_usage": "Capacity Usage",
+      "declared_capacity": "declared",
+      "occupied_capacity": "occupied"
     },
     "block": {
       "block": "Block",
@@ -297,7 +317,9 @@
       "transactions_root": "Transactions Root",
       "pending": "Pending",
       "pending_tip": "The block reward of this block will be sent to the miner after 11 blocks，learn more from our Consensus Protocol",
-      "reward_sent_tip": "The reward of this block has been sent, click to check the details"
+      "reward_sent_tip": "The reward of this block has been sent, click to check the details",
+      "view_prev_block": "View the previous block",
+      "view_next_block": "View the next block"
     },
     "nervos_dao": {
       "nervos_dao": "Nervos DAO",
@@ -354,6 +376,7 @@
       "sudt": "sUDT",
       "name": "Name",
       "symbol": "Symbol",
+      "uan": "UAN",
       "total_amount": "Total Amount",
       "issuer": "Issuer",
       "type_script": "Type Script",
@@ -364,12 +387,57 @@
       "submit_token_info": "Submit Token Info",
       "unknown_token_description": "The token’s information is incomplete. If you are the owner of this token, please submit token info.",
       "tokens": "Tokens",
-      "name_symbol": "Name (symbol)",
+      "uan_name": "UAN & Name",
       "transactions": "24hr Transactions",
       "address_count": "Address Count",
       "created_time": "Created Time",
       "tokens_empty": "There are no tokens at this time.",
-      "unverified": "Unverified"
+      "unverified": "Unverified",
+      "view-deprecated-address": "View deprecated address"
+    },
+    "nft": {
+      "nft_collection": "NFT Collection",
+      "collection_name": "Collection Name",
+      "standard": "Type",
+      "holder_and_mint_count": "Holder/Minted",
+      "minter_address": "Creator",
+      "no_record": "No records",
+      "mnft": "M-NFT",
+      "m_nft": "m-NFT",
+      "nrc721": "NRC 721",
+      "nrc_721": "NRC 721",
+      "cota": "CoTA",
+      "loading": "Loading...",
+      "nft": "NFT",
+      "tx_hash": "Tx",
+      "age": "Age",
+      "from": "From",
+      "to": "To",
+      "transfer-list": "Transfers",
+      "holder-list": "Holders",
+      "holder": "Holder",
+      "owner": "Owner",
+      "quantity": "Quantity",
+      "inventory": "Inventory",
+      "action": "Action",
+      "action_type": {
+        "mint": "Mint",
+        "normal": "Transfer",
+        "destruction": "Burn"
+      },
+      "activity": "Activity",
+      "toggle-age": "Switch time format"
+    },
+    "script_list": {
+      "title": "Scripts",
+      "links": "Links",
+      "on_chain_data": "On-chain data",
+      "link": {
+        "rfc": "RFC",
+        "code": "Source Code",
+        "deprecated": "Deprecated",
+        "website": "Website"
+      }
     }
   }
 }

@@ -1,36 +1,40 @@
-import styled, { ThemeProvider } from 'styled-components'
+import { useMemo } from 'react'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import { ThemeProvider } from 'styled-components'
 import 'antd/dist/antd.css'
 import Routers from './routes'
 import Toast from './components/Toast'
-import withProviders from './contexts/providers'
+import withProviders, { useAppState } from './contexts/providers'
 import useInitApp from './contexts/providers/hook'
-import {
-  MAINNET_PRIMARY_THEME_COLOR,
-  MAINNET_SECONDARY_THEME_COLOR,
-  TESTNET_PRIMARY_THEME_COLOR,
-  TESTNET_SECONDARY_THEME_COLOR,
-} from './constants/common'
 import { isMainnet } from './utils/chain'
 
-const AppDiv = styled.div`
-  width: 100vw;
-  height: 100vh;
-`
-
-const Theme = {
-  primary: isMainnet() ? MAINNET_PRIMARY_THEME_COLOR : TESTNET_PRIMARY_THEME_COLOR,
-  secondary: isMainnet() ? MAINNET_SECONDARY_THEME_COLOR : TESTNET_SECONDARY_THEME_COLOR,
+const appStyle = {
+  width: '100vw',
+  height: '100vh',
+  maxWidth: '100%',
 }
+
+const queryClient = new QueryClient()
 
 const App = withProviders(() => {
   useInitApp()
+  const { app } = useAppState()
+  const theme = useMemo(
+    () => ({
+      primary: app.primaryColor,
+      secondary: app.secondaryColor,
+    }),
+    [app.primaryColor, app.secondaryColor],
+  )
 
   return (
-    <ThemeProvider theme={Theme}>
-      <AppDiv>
-        <Routers />
-        <Toast />
-      </AppDiv>
+    <ThemeProvider theme={theme}>
+      <div style={appStyle} data-net={isMainnet() ? 'mainnet' : 'testnet'}>
+        <QueryClientProvider client={queryClient}>
+          <Routers />
+          <Toast />
+        </QueryClientProvider>
+      </div>
     </ThemeProvider>
   )
 })

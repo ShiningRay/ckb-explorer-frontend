@@ -7,9 +7,8 @@ import { useAppState } from '../../../contexts/providers'
 import { HeaderBlockchainPanel, MobileSubMenuPanel } from './styled'
 import SimpleButton from '../../SimpleButton'
 import ChainDropdown from '../../Dropdown/ChainType'
-import i18n from '../../../utils/i18n'
-import CONFIG from '../../../config'
 import { isMobile } from '../../../utils/screen'
+import { ChainName, MAINNET_URL, TESTNET_URL } from '../../../constants/common'
 
 const getDropdownIcon = (showDropdown: boolean) => {
   if (!showDropdown) return WhiteDropdownIcon
@@ -57,8 +56,13 @@ const BlockchainDropdown = () => {
         }}
       >
         <div className="header__blockchain__content_panel">
-          <div className="header__blockchain__content">
-            {isMainnet() ? i18n.t('navbar.mainnet') : CONFIG.TESTNET_NAME.toUpperCase()}
+          <div
+            className="header__blockchain__content"
+            style={{
+              textTransform: 'uppercase',
+            }}
+          >
+            {isMainnet() ? ChainName.Mainnet : ChainName.Testnet}
           </div>
           <img src={getDropdownIcon(showChainType)} alt="dropdown icon" />
         </div>
@@ -90,19 +94,24 @@ const BlockchainMenu = () => {
           setShowSubMenu(!showSubMenu)
         }}
       >
-        <div className="mobile__menus__main__item__content__highlight">
-          {isMainnet() ? i18n.t('navbar.mainnet') : CONFIG.TESTNET_NAME.toUpperCase()}
+        <div
+          className="mobile__menus__main__item__content__highlight"
+          style={{
+            textTransform: 'uppercase',
+          }}
+        >
+          {isMainnet() ? ChainName.Mainnet : ChainName.Testnet}
         </div>
         <img className="mobile__menus__main__item__icon" alt="mobile chain type icon" src={chainTypeIcon()} />
       </SimpleButton>
       <div className="blockchain__mobile__node__version">{handleVersion(nodeVersion)}</div>
       {showSubMenu && (
         <>
-          <a className="mobile__menus__sub__item" href={CONFIG.MAINNET_URL}>
-            {i18n.t('blockchain.mainnet')}
+          <a className="mobile__menus__sub__item" href={MAINNET_URL}>
+            {`${ChainName.Mainnet} mainnet`}
           </a>
-          <a className="mobile__menus__sub__item" href={`${CONFIG.MAINNET_URL}/${CONFIG.TESTNET_NAME}`}>
-            {`${CONFIG.TESTNET_NAME} ${i18n.t('blockchain.testnet')}`}
+          <a className="mobile__menus__sub__item" href={TESTNET_URL}>
+            {`${ChainName.Testnet} testnet`}
           </a>
         </>
       )}

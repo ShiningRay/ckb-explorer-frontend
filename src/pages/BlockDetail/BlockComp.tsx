@@ -15,7 +15,7 @@ import i18n from '../../utils/i18n'
 import { localeNumberString, handleDifficulty } from '../../utils/number'
 import { isMobile } from '../../utils/screen'
 import { adaptMobileEllipsis, adaptPCEllipsis, hexToUtf8 } from '../../utils/string'
-import { shannonToCkb } from '../../utils/util'
+import { deprecatedAddrToNewAddr, shannonToCkb } from '../../utils/util'
 import {
   BlockLinkPanel,
   BlockOverviewDisplayControlPanel,
@@ -28,11 +28,13 @@ import {
 import HelpIcon from '../../assets/qa_help.png'
 import MoreIcon from '../../assets/more.png'
 import MinerRewardIcon from '../../assets/miner_complete.png'
+import { ReactComponent as LeftArrow } from '../../assets/prev_block.svg'
 import { isMainnet } from '../../utils/chain'
 import DecimalCapacity from '../../components/DecimalCapacity'
 import CopyTooltipText from '../../components/Text/CopyTooltipText'
 import { DELAY_BLOCK_NUMBER } from '../../constants/common'
 import TitleCard from '../../components/Card/TitleCard'
+import styles from './styles.module.scss'
 
 const handleMinerText = (address: string) => {
   if (isMobile()) {
@@ -116,6 +118,7 @@ const BlockMinerReward = ({
 export const BlockOverview = () => {
   const {
     blockState: { block },
+    statistics: { tipBlockNumber },
   } = useAppState()
   const [showAllOverview, setShowAllOverview] = useState(false)
   const minerReward = <DecimalCapacity value={localeNumberString(shannonToCkb(block.minerReward))} />
@@ -129,7 +132,25 @@ export const BlockOverview = () => {
   let overviewItems: OverviewItemData[] = [
     {
       title: i18n.t('block.block_height'),
-      content: localeNumberString(block.number),
+      content: (
+        <div className={styles.blockNumber}>
+          <Tooltip placement="top" title={i18n.t('block.view_prev_block')}>
+            <Link to={`/block/${+block.number - 1}`} className={styles.prev} data-disabled={+block.number <= 0}>
+              <LeftArrow />
+            </Link>
+          </Tooltip>
+          {localeNumberString(block.number)}
+          <Tooltip title={i18n.t('block.view_next_block')}>
+            <Link
+              to={`/block/${+block.number + 1}`}
+              className={styles.next}
+              data-disabled={+block.number >= +tipBlockNumber}
+            >
+              <LeftArrow />
+            </Link>
+          </Tooltip>
+        </div>
+      ),
     },
     {
       title: i18n.t('block.miner'),
@@ -256,7 +277,17 @@ export const BlockComp = ({
           transaction && (
             <TransactionItem
               key={transaction.transactionHash}
-              transaction={transaction}
+              transaction={{
+                ...transaction,
+                displayInputs: transaction.displayInputs.map(input => ({
+                  ...input,
+                  addressHash: deprecatedAddrToNewAddr(input.addressHash),
+                })),
+                displayOutputs: transaction.displayOutputs.map(output => ({
+                  ...output,
+                  addressHash: deprecatedAddrToNewAddr(output.addressHash),
+                })),
+              }}
               circleCorner={{
                 bottom: index === transactions.length - 1 && totalPages === 1,
               }}

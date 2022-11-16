@@ -3,7 +3,7 @@ import { AppDispatch } from '../../contexts/reducer'
 import { PageActions } from '../../contexts/actions'
 
 export const getStatistics = (dispatch: AppDispatch) => {
-  fetchStatistics().then((wrapper: Response.Wrapper<State.Statistics> | null) => {
+  return fetchStatistics().then((wrapper: Response.Wrapper<State.Statistics> | null) => {
     if (wrapper) {
       dispatch({
         type: PageActions.UpdateStatistics,

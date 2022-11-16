@@ -1,10 +1,10 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import i18n, { currentLanguage } from '../../../utils/i18n'
 import { isMobile } from '../../../utils/screen'
 import { useAppState, useDispatch } from '../../../contexts/providers'
-import { ChartColors } from '../../../constants/common'
 import { ChartLoading, ReactChartCore, ChartPage, tooltipColor, tooltipWidth } from '../common'
 import { getStatisticAnnualPercentageCompensation } from '../../../service/app/charts/monetary'
+import { DATA_ZOOM_CONFIG } from '../../../utils/chart'
 
 const gridThumbnail = {
   left: '4%',
@@ -23,23 +23,27 @@ const grid = {
 
 const getOption = (
   statisticAnnualPercentageCompensations: State.StatisticAnnualPercentageCompensation[],
+  chartColor: State.App['chartColor'],
   isThumbnail = false,
 ): echarts.EChartOption => ({
-  color: ChartColors,
+  color: chartColor.colors,
   tooltip: !isThumbnail
     ? {
         trigger: 'axis',
         formatter: (dataList: any) => {
           const widthSpan = (value: string) => tooltipWidth(value, currentLanguage() === 'en' ? 220 : 80)
-          let result = `<div>${tooltipColor('#333333')}${widthSpan(i18n.t('statistic.year'))} ${dataList[0].name}</div>`
-          result += `<div>${tooltipColor(ChartColors[0])}${widthSpan(i18n.t('statistic.nominal_apc'))} ${
-            dataList[0].data
+          let result = `<div>${tooltipColor('#333333')}${widthSpan(i18n.t('statistic.year'))} ${
+            dataList[0].data[0]
+          }</div>`
+          result += `<div>${tooltipColor(chartColor.colors[0])}${widthSpan(i18n.t('statistic.nominal_apc'))} ${
+            dataList[0].data[1]
           }%</div>`
           return result
         },
       }
     : undefined,
   grid: isThumbnail ? gridThumbnail : grid,
+  dataZoom: isThumbnail ? [] : DATA_ZOOM_CONFIG,
   xAxis: [
     {
       name: isMobile() || isThumbnail ? '' : i18n.t('statistic.year'),
@@ -47,10 +51,8 @@ const getOption = (
       nameGap: 30,
       type: 'category',
       boundaryGap: false,
-      data: statisticAnnualPercentageCompensations.map(data => data.year),
       axisLabel: {
         interval: isMobile() || isThumbnail ? 7 : 3,
-        formatter: (value: string) => value,
       },
     },
   ],
@@ -64,7 +66,7 @@ const getOption = (
       },
       axisLine: {
         lineStyle: {
-          color: ChartColors[0],
+          color: chartColor.colors[0],
         },
       },
       axisLabel: {
@@ -80,19 +82,23 @@ const getOption = (
       symbol: isThumbnail ? 'none' : 'circle',
       symbolSize: 3,
       stack: 'sum',
-      data: statisticAnnualPercentageCompensations.map(data => Number(data.apc).toFixed(2)),
     },
   ],
+  dataset: {
+    source: statisticAnnualPercentageCompensations.map(data => [data.year, (+data.apc).toFixed(2)]),
+  },
 })
 
 export const AnnualPercentageCompensationChart = ({ isThumbnail = false }: { isThumbnail?: boolean }) => {
-  const { statisticAnnualPercentageCompensations, statisticAnnualPercentageCompensationsFetchEnd } = useAppState()
+  const { statisticAnnualPercentageCompensations, statisticAnnualPercentageCompensationsFetchEnd, app } = useAppState()
+  const option = useMemo(
+    () => getOption(statisticAnnualPercentageCompensations, app.chartColor, isThumbnail),
+    [statisticAnnualPercentageCompensations, app.chartColor, isThumbnail],
+  )
   if (!statisticAnnualPercentageCompensationsFetchEnd || statisticAnnualPercentageCompensations.length === 0) {
     return <ChartLoading show={!statisticAnnualPercentageCompensationsFetchEnd} isThumbnail={isThumbnail} />
   }
-  return (
-    <ReactChartCore option={getOption(statisticAnnualPercentageCompensations, isThumbnail)} isThumbnail={isThumbnail} />
-  )
+  return <ReactChartCore option={option} isThumbnail={isThumbnail} />
 }
 
 const toCSV = (statisticAnnualPercentageCompensations: State.StatisticAnnualPercentageCompensation[]) =>
